@@ -1,0 +1,193 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import Tag from "../../components/Tag.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const allPosts = await getCollection("posts");
+
+    return allPosts.map((post) => ({
+        params: { slug: post.slug },
+        props: { post },
+    }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+const { title, description, date, tags } = post.data;
+
+const formattedDate = new Date(date).toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+});
+---
+
+<Layout title={`${title} - Blog Personal`}>
+    <Header />
+
+    <main class="post-page">
+        <article class="container">
+            <header class="post-header">
+                <time class="post-date text-secondary">{formattedDate}</time>
+                <h1 class="post-title">{title}</h1>
+                <p class="post-description text-secondary">{description}</p>
+
+                {
+                    tags && tags.length > 0 && (
+                        <div class="post-tags">
+                            {tags.map((tag) => (
+                                <Tag tag={tag} />
+                            ))}
+                        </div>
+                    )
+                }
+            </header>
+
+            <div class="post-content">
+                <Content />
+            </div>
+
+            <footer class="post-footer">
+                <a href="/posts" class="back-link link-underline"
+                    >← Volver a todos los posts</a
+                >
+            </footer>
+        </article>
+    </main>
+
+    <Footer />
+</Layout>
+
+<style>
+    .post-page {
+        min-height: calc(100vh - 200px);
+        padding: var(--spacing-3xl) 0;
+    }
+
+    .post-header {
+        margin-bottom: var(--spacing-3xl);
+        padding-bottom: var(--spacing-2xl);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .post-date {
+        display: block;
+        font-size: var(--font-size-sm);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .post-title {
+        font-size: var(--font-size-4xl);
+        margin-bottom: var(--spacing-md);
+        line-height: var(--line-height-tight);
+    }
+
+    .post-description {
+        font-size: var(--font-size-xl);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+
+    .post-content {
+        font-size: var(--font-size-lg);
+        line-height: var(--line-height-relaxed);
+    }
+
+    .post-content :global(h1),
+    .post-content :global(h2),
+    .post-content :global(h3) {
+        margin-top: var(--spacing-2xl);
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .post-content :global(h2) {
+        font-size: var(--font-size-2xl);
+        padding-bottom: var(--spacing-sm);
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .post-content :global(h3) {
+        font-size: var(--font-size-xl);
+    }
+
+    .post-content :global(p) {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .post-content :global(ul),
+    .post-content :global(ol) {
+        margin-bottom: var(--spacing-lg);
+        padding-left: var(--spacing-xl);
+    }
+
+    .post-content :global(li) {
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .post-content :global(pre) {
+        margin: var(--spacing-xl) 0;
+        padding: var(--spacing-lg);
+        background-color: #0a0a0a;
+        border: 3px solid var(--color-text);
+        border-radius: var(--radius-md);
+        overflow-x: auto;
+    }
+
+    /* Personalizar el tema de código generado por Astro/Shiki */
+    .post-content :global(.astro-code) {
+        background-color: #0a0a0a !important;
+        padding: var(--spacing-lg);
+        border-radius: var(--radius-md);
+    }
+
+    .post-content :global(code) {
+        font-family: "Courier New", monospace;
+        font-size: var(--font-size-sm);
+        background-color: var(--color-hover);
+        padding: 2px 6px;
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--color-border);
+    }
+
+    .post-content :global(pre code) {
+        background: none;
+        padding: 0;
+        border: none;
+    }
+
+    .post-content :global(img) {
+        margin: var(--spacing-xl) 0;
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--color-border);
+    }
+
+    .post-footer {
+        margin-top: var(--spacing-3xl);
+        padding-top: var(--spacing-2xl);
+        border-top: 1px solid var(--color-border);
+    }
+
+    .back-link {
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .post-title {
+            font-size: var(--font-size-3xl);
+        }
+
+        .post-description {
+            font-size: var(--font-size-lg);
+        }
+    }
+</style>

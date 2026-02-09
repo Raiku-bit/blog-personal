@@ -1,0 +1,143 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("posts");
+const sortedPosts = allPosts.sort(
+    (a, b) => a.data.date.getTime() - b.data.date.getTime(),
+);
+
+// Get all unique tags
+const allTags = [...new Set(allPosts.flatMap((post) => post.data.tags))];
+---
+
+<Layout title="Mis Proyectos - Blog Personal">
+    <Header />
+
+    <main class="posts-page">
+        <div class="container">
+            <header class="page-header">
+                <h1>Mis Experimentos</h1>
+            </header>
+
+            <div class="tags-filter">
+                <div class="tags-list">
+                    <a href="/posts" class="tag-filter active">Todos</a>
+                    {
+                        allTags.map((tag) => (
+                            <a
+                                href={`/tags/${tag.toLowerCase()}`}
+                                class="tag-filter"
+                            >
+                                {tag}
+                            </a>
+                        ))
+                    }
+                </div>
+            </div>
+
+            <div class="posts-grid">
+                {sortedPosts.map((post) => <PostCard post={post} />)}
+            </div>
+
+            {
+                sortedPosts.length === 0 && (
+                    <div class="no-posts">
+                        <p>No hay posts disponibles todavía.</p>
+                    </div>
+                )
+            }
+        </div>
+    </main>
+
+    <Footer />
+</Layout>
+
+<style>
+    .posts-page {
+        min-height: calc(100vh - 200px);
+        padding: var(--spacing-3xl) 0;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: var(--spacing-2xl);
+        padding-bottom: var(--spacing-xl);
+        border-bottom: 3px solid var(--color-text);
+    }
+
+    .page-header h1 {
+        margin-bottom: var(--spacing-md);
+        font-weight: 800;
+    }
+
+    .page-header p {
+        font-size: var(--font-size-lg);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .tags-filter {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-md);
+        margin-bottom: var(--spacing-2xl);
+        padding: var(--spacing-lg);
+        background-color: var(--color-hover);
+        border: 2px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        flex-wrap: wrap;
+    }
+
+    .filter-label {
+        font-weight: 700;
+        white-space: nowrap;
+        font-size: var(--font-size-base);
+    }
+
+    .tags-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+    }
+
+    .tag-filter {
+        padding: var(--spacing-xs) var(--spacing-md);
+        border: 2px solid var(--color-text);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        transition: all var(--transition-base);
+        background-color: var(--color-bg);
+    }
+
+    .tag-filter:hover,
+    .tag-filter.active {
+        background-color: var(--color-text);
+        color: var(--color-bg);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .no-posts {
+        text-align: center;
+        padding: var(--spacing-3xl);
+        color: var(--color-text-secondary);
+    }
+
+    @media (max-width: 768px) {
+        .tags-filter {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>

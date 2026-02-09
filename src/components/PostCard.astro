@@ -1,0 +1,138 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Tag from "./Tag.astro";
+
+interface Props {
+    post: CollectionEntry<"posts">;
+}
+
+const { post } = Astro.props;
+const { title, image, tags, date } = post.data;
+
+const formattedDate = new Date(date).toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "UTC",
+});
+---
+
+<article class="post-card">
+    <a href={`/posts/${post.slug}`} class="post-link">
+        {
+            image && (
+                <div class="post-image">
+                    <img src={image} alt={title} />
+                </div>
+            )
+        }
+
+        <div class="post-content">
+            <h3 class="post-title">{title}</h3>
+            {
+                tags && tags.length > 0 && (
+                    <div class="post-tags">
+                        {tags.map((tag) => (
+                            <Tag tag={tag} />
+                        ))}
+                    </div>
+                )
+            }
+
+            <time class="post-date text-secondary">{formattedDate}</time>
+        </div>
+    </a>
+</article>
+
+<style>
+    .post-card {
+        background-color: var(--color-bg);
+        border: 3px solid var(--color-text);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        transition: all var(--transition-base);
+        display: flex;
+        flex-direction: column;
+        width: 400px;
+    }
+
+    .post-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 8px 8px 0 var(--color-text);
+    }
+
+    .post-link {
+        display: flex;
+        gap: var(--spacing-md); /* Reducir espacio entre imagen y texto */
+        text-decoration: none;
+        color: inherit;
+        align-items: flex-start; /* Alinear contenido al inicio (arriba) */
+    }
+
+    .post-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform var(--transition-slow);
+    }
+
+    .post-content {
+        padding: var(--spacing-md);
+        padding-right: var(--spacing-md);
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .post-title {
+        font-size: var(--font-size-xl);
+        font-weight: 700;
+        margin-bottom: var(--spacing-sm);
+        line-height: var(--line-height-tight);
+        color: var(--color-text);
+        margin-top: 0; /* Asegurar que empiece arriba */
+    }
+
+    .post-description {
+        font-size: var(--font-size-sm);
+        line-height: var(--line-height-relaxed);
+        margin-bottom: var(--spacing-md);
+        color: var(--color-text-secondary);
+    }
+
+    .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-sm);
+        margin-bottom: var(--spacing-sm);
+        margin-top: auto; /* Empujar tags y fecha al fondo si sobra espacio */
+    }
+
+    .post-date {
+        font-size: var(--font-size-xs);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--color-text-secondary);
+        align-self: flex-end;
+    }
+
+    /* Responsive: volver a vertical en pantallas pequeñas */
+    @media (max-width: 500px) {
+        .post-link {
+            flex-direction: column;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 200px;
+            min-width: 100%;
+            border-right: none;
+            border-bottom: 3px solid var(--color-text);
+        }
+
+        .post-date {
+            align-self: flex-start;
+        }
+    }
+</style>

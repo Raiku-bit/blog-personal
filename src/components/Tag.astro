@@ -1,0 +1,35 @@
+---
+interface Props {
+    tag: string;
+    href?: string;
+}
+
+const { tag, href } = Astro.props;
+const tagUrl = href || `/tags/${tag.toLowerCase()}`;
+---
+
+<a href={tagUrl} class="tag">
+    {tag}
+</a>
+
+<style>
+    .tag {
+        display: inline-block;
+        padding: var(--spacing-xs) var(--spacing-md);
+        background-color: var(--color-bg);
+        border: 2px solid var(--color-text);
+        border-radius: var(--radius-md);
+        font-size: var(--font-size-xs);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all var(--transition-base);
+    }
+
+    .tag:hover {
+        background-color: var(--color-text);
+        color: var(--color-bg);
+        transform: translateY(-2px);
+        box-shadow: 2px 2px 0 var(--color-text-secondary);
+    }
+</style>

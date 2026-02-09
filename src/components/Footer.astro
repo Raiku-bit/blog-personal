@@ -1,0 +1,38 @@
+---
+const currentYear = new Date().getFullYear();
+---
+
+<footer class="footer">
+    <div class="container">
+        <div class="footer-content">
+            <p class="footer-text">
+                © {currentYear} Blog Personal. Todos los derechos reservados.
+            </p>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        border-top: 3px solid var(--color-text);
+        margin-top: var(--spacing-3xl);
+        padding: var(--spacing-2xl) 0;
+        background-color: var(--color-hover);
+    }
+
+    .footer-content {
+        text-align: center;
+    }
+
+    .footer-text {
+        font-size: var(--font-size-sm);
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .footer-tagline {
+        font-size: var(--font-size-xs);
+        margin: 0;
+        font-weight: 500;
+    }
+</style>

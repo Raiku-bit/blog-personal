@@ -1,0 +1,97 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import PostCard from "../../components/PostCard.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const allPosts = await getCollection("posts");
+
+    // Get all unique tags
+    const uniqueTags = [...new Set(allPosts.flatMap((post) => post.data.tags))];
+
+    return uniqueTags.map((tag) => {
+        const filteredPosts = allPosts
+            .filter((post) => post.data.tags.includes(tag))
+            .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+        return {
+            params: { tag: tag.toLowerCase() },
+            props: { tag, posts: filteredPosts },
+        };
+    });
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<Layout title={`${tag} - Blog Personal`}>
+    <Header />
+
+    <main class="tag-page">
+        <div class="container">
+            <header class="page-header">
+                <a href="/tags" class="back-link link-underline"
+                    >← Todas las etiquetas</a
+                >
+                <h1>
+                    <span class="tag-label">Etiqueta:</span>
+                    {tag}
+                </h1>
+                <p class="text-secondary">
+                    {posts.length}
+                    {
+                        posts.length === 1
+                            ? "post encontrado"
+                            : "posts encontrados"
+                    }
+                </p>
+            </header>
+
+            <div class="posts-grid">
+                {posts.map((post) => <PostCard post={post} />)}
+            </div>
+        </div>
+    </main>
+
+    <Footer />
+</Layout>
+
+<style>
+    .tag-page {
+        min-height: calc(100vh - 200px);
+        padding: var(--spacing-3xl) 0;
+    }
+
+    .page-header {
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: var(--spacing-md);
+        font-weight: 500;
+        font-size: var(--font-size-sm);
+    }
+
+    .page-header h1 {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .tag-label {
+        color: var(--color-text-secondary);
+        font-weight: 400;
+        font-size: var(--font-size-2xl);
+    }
+
+    .page-header p {
+        font-size: var(--font-size-lg);
+    }
+
+    .posts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: var(--spacing-lg);
+    }
+</style>

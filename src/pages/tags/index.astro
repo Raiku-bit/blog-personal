@@ -1,0 +1,115 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header.astro";
+import Footer from "../../components/Footer.astro";
+import { getCollection } from "astro:content";
+
+const allPosts = await getCollection("posts");
+
+// Get all unique tags with post counts
+const tagCounts = allPosts.reduce(
+    (acc, post) => {
+        post.data.tags.forEach((tag) => {
+            acc[tag] = (acc[tag] || 0) + 1;
+        });
+        return acc;
+    },
+    {} as Record<string, number>,
+);
+
+const tags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+---
+
+<Layout title="Etiquetas - Blog Personal">
+    <Header />
+
+    <main class="tags-page">
+        <div class="container">
+            <header class="page-header">
+                <h1>Todas las Etiquetas</h1>
+                <p class="text-secondary">Explora posts por categoría</p>
+            </header>
+
+            <div class="tags-grid">
+                {
+                    tags.map(([tag, count]) => (
+                        <a href={`/tags/${tag.toLowerCase()}`} class="tag-card">
+                            <h3 class="tag-name">{tag}</h3>
+                            <p class="tag-count text-secondary">
+                                {count} {count === 1 ? "post" : "posts"}
+                            </p>
+                        </a>
+                    ))
+                }
+            </div>
+
+            {
+                tags.length === 0 && (
+                    <div class="no-tags">
+                        <p>No hay etiquetas disponibles todavía.</p>
+                    </div>
+                )
+            }
+        </div>
+    </main>
+
+    <Footer />
+</Layout>
+
+<style>
+    .tags-page {
+        min-height: calc(100vh - 200px);
+        padding: var(--spacing-3xl) 0;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: var(--spacing-2xl);
+    }
+
+    .page-header h1 {
+        margin-bottom: var(--spacing-md);
+    }
+
+    .page-header p {
+        font-size: var(--font-size-lg);
+    }
+
+    .tags-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: var(--spacing-lg);
+    }
+
+    .tag-card {
+        padding: var(--spacing-xl);
+        background-color: var(--color-bg);
+        border: 2px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        text-align: center;
+        transition: all var(--transition-base);
+    }
+
+    .tag-card:hover {
+        border-color: var(--color-text);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .tag-name {
+        font-size: var(--font-size-2xl);
+        font-weight: 600;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    .tag-count {
+        font-size: var(--font-size-base);
+        margin: 0;
+    }
+
+    .no-tags {
+        text-align: center;
+        padding: var(--spacing-3xl);
+        color: var(--color-text-secondary);
+    }
+</style>
