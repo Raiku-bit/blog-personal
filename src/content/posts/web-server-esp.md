@@ -2,7 +2,7 @@
 title: 'Web Server con ESP8266MOD'
 description: 'Servir una página web con un ESP8266MOD'
 date: 2026-02-08
-image: 'images/posts/esp8266mod.jpeg'
+image: '/images/posts/esp8266mod.jpeg'
 tags: ['Electrónica', 'IoT', 'Programación']
 ---
 

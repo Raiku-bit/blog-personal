@@ -10,7 +10,6 @@ const sortedPosts = allPosts.sort(
     (a, b) => a.data.date.getTime() - b.data.date.getTime(),
 );
 
-// Get all unique tags
 const allTags = [...new Set(allPosts.flatMap((post) => post.data.tags))];
 ---
 
